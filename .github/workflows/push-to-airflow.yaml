@@ -14,5 +14,5 @@ jobs:
         username: ${{ secrets.AIRFLOWUSER }}
         password: ${{ secrets.AIRFLOWPASSWORD }}
         port: ${{ secrets.AIRFLOWPORT }}
-        source: "dags/*"
-        target: "/home/vivek/dags"
+        source: "dags/*.py"
+        target: "/home/vivek/dags/"
