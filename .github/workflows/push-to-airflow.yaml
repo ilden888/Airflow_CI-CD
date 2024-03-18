@@ -15,4 +15,5 @@ jobs:
         password: ${{ secrets.AIRFLOWPASSWORD }}
         port: ${{ secrets.AIRFLOWPORT }}
         source: "dags/*.py"
-        target: "/home/vivek/dags/"
+        target: "/home/vivek/"
+        overwrite: true

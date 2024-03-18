@@ -9,7 +9,7 @@ from airflow.operators.empty import EmptyOperator
 
 
 args = {
-    'owner': 'k0rsakov',
+    'owner': 'denis',
     'start_date': datetime(2023, 3, 10, tzinfo=pendulum.timezone('Europe/Moscow')),
     'catchup': True,
     'retries': 3,
@@ -27,10 +27,10 @@ def print_something() -> None:
     print('something')
 
 with DAG(
-        dag_id='template',
+        dag_id='testdag1',
         schedule_interval='10 0 * * *',
         default_args=args,
-        tags=['template', 'test'],
+        tags=['testdag1', 'test'],
         description='',
         concurrency=1
 ) as dag:
