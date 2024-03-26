@@ -249,22 +249,22 @@ def param_agg(df, param):
 
 
 
-def main():
-  # Получение данных по API
-    yandex_direct_api = Yandex_Direct_API()
-    headers = yandex_direct_api.get_headers(token, clientLogin)
-    body = yandex_direct_api.get_body(date1, date2, goalID)
-    df = yandex_direct_api.getReport(headers, body)
+# def main():
+#   # Получение данных по API
+#     yandex_direct_api = Yandex_Direct_API()
+#     headers = yandex_direct_api.get_headers(token, clientLogin)
+#     body = yandex_direct_api.get_body(date1, date2, goalID)
+#     df = yandex_direct_api.getReport(headers, body)
 
-    params = ['Название кампании', 'Название группы объявлений', 'Устройство', 'Дата', 'Пол', 'ГЕО']
+#     params = ['Название кампании', 'Название группы объявлений', 'Устройство', 'Дата', 'Пол', 'ГЕО']
 
-    arrayDfs = []
-    # Обработка полученных данных
-    if df is not None:
-        df = yandex_direct_api.normalize_Data(df)
+#     arrayDfs = []
+#     # Обработка полученных данных
+#     if df is not None:
+#         df = yandex_direct_api.normalize_Data(df)
 
-        for param in params:
-            arrayDfs.append(param_agg(df,param))
+#         for param in params:
+#             arrayDfs.append(param_agg(df,param))
 
         # Создание ExcelWriter объекта
         # with pd.ExcelWriter(f'{clientLogin}_data.xlsx') as writer:
