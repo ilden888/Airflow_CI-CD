@@ -4,6 +4,8 @@ from airflow.operators.python_operator import PythonOperator
 import psycopg2
 from sqlalchemy import create_engine, Column, Integer, Float, Date
 from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy import Column, Integer, Float, String, DateTime
+from sqlalchemy.ext.declarative import declarative_base
 import pandas as pd
 import numpy as np
 import random
@@ -13,7 +15,7 @@ from io import StringIO
 import asyncio
 
 default_args = {
-    'owner': 'airflow',
+    'owner': 'deniks',
     'depends_on_past': False,
     'start_date': datetime(2024, 3, 26),
     'email_on_failure': False,
@@ -168,7 +170,9 @@ class Yandex_Direct_API:
         df (DataFrame): DataFrame pandas с данными отчета.
 
         Возвращает:
-        DataFrame: Очищенный и норм
+        DataFrame: Очищенный и нормализированный DataFrame pandas.
+        """
+
         # получаем список колонок с конверсиями
         conversionsCols = []
 
@@ -208,27 +212,27 @@ class Yandex_Direct_API:
 
 
 
-    def calculate_metrics(df):
-        """
-        Обработка данных и добавление столбцов CPC, CPA и CR.
+def calculate_metrics(df):
+    """
+    Обработка данных и добавление столбцов CPC, CPA и CR.
 
-        Аргументы:
-        df (DataFrame): DataFrame pandas с данными отчета.
+    Аргументы:
+    df (DataFrame): DataFrame pandas с данными отчета.
 
-        Возвращает:
-        DataFrame: DataFrame pandas с добавленными столбцами CPC, CPA и CR.
-        """
-        # Вычисление CPC
-        df['CPC (руб.)'] = round(df['Расход'] / df['Клики'],2)
+    Возвращает:
+    DataFrame: DataFrame pandas с добавленными столбцами CPC, CPA и CR.
+    """
+    # Вычисление CPC
+    df['CPC (руб.)'] = round(df['Расход'] / df['Клики'],2)
 
-        # Вычисление CPA
-        df['CPA (руб.)'] = round(df['Расход'] / df['Конверсии'])
+    # Вычисление CPA
+    df['CPA (руб.)'] = round(df['Расход'] / df['Конверсии'])
 
-        # Вычисление CR
-        df['CR (%)'] = round((df['Конверсии'] / df['Клики']) * 100,2)
+    # Вычисление CR
+    df['CR (%)'] = round((df['Конверсии'] / df['Клики']) * 100,2)
 
-        # Заполнение бесконечных значений в результате деления на ноль
-        df.replace([np.inf, -np.inf], np.nan, inplace=True)
+    # Заполнение бесконечных значений в результате деления на ноль
+    df.replace([np.inf, -np.inf], np.nan, inplace=True)
 
     return df
 
@@ -276,6 +280,7 @@ def main():
             load_data_to_postgresql(arrayDfs[3])
 
             return arrayDfs
+
 def load_data_to_postgresql(df):
     connection_params = {
         'user': 'test-ad',
@@ -316,6 +321,8 @@ def load_data_to_postgresql(df):
             'CR (%)': Float
         }
     )
+
+    print("Данные успешно загружены в таблицу MitServis_Direct_day.")
 
 def run_yandex_direct_update():
     main()
