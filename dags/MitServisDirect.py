@@ -26,7 +26,7 @@ dag = DAG(
     'yandex_direct_update_MitServis',
     default_args=default_args,
     description='DAG for updating Yandex Direct data every 30 minutes',
-    schedule_interval='*/30 * * * *',  # запуск каждые 30 минут.
+    schedule_interval='*/59 * * * *',  # запуск каждые 59 минут.
     catchup=False
 )
 
