@@ -206,27 +206,27 @@ class Yandex_Direct_API:
 
 
 
-def calculate_metrics(df):
-    """
-    Обработка данных и добавление столбцов CPC, CPA и CR.
+    def calculate_metrics(df):
+        """
+        Обработка данных и добавление столбцов CPC, CPA и CR.
 
-    Аргументы:
-    df (DataFrame): DataFrame pandas с данными отчета.
+        Аргументы:
+        df (DataFrame): DataFrame pandas с данными отчета.
 
-    Возвращает:
-    DataFrame: DataFrame pandas с добавленными столбцами CPC, CPA и CR.
-    """
-    # Вычисление CPC
-    df['CPC (руб.)'] = round(df['Расход'] / df['Клики'],2)
+        Возвращает:
+        DataFrame: DataFrame pandas с добавленными столбцами CPC, CPA и CR.
+        """
+        # Вычисление CPC
+        df['CPC (руб.)'] = round(df['Расход'] / df['Клики'],2)
 
-    # Вычисление CPA
-    df['CPA (руб.)'] = round(df['Расход'] / df['Конверсии'])
+        # Вычисление CPA
+        df['CPA (руб.)'] = round(df['Расход'] / df['Конверсии'])
 
-    # Вычисление CR
-    df['CR (%)'] = round((df['Конверсии'] / df['Клики']) * 100,2)
+        # Вычисление CR
+        df['CR (%)'] = round((df['Конверсии'] / df['Клики']) * 100,2)
 
-    # Заполнение бесконечных значений в результате деления на ноль
-    df.replace([np.inf, -np.inf], np.nan, inplace=True)
+        # Заполнение бесконечных значений в результате деления на ноль
+        df.replace([np.inf, -np.inf], np.nan, inplace=True)
 
     return df
 
