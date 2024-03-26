@@ -8,7 +8,9 @@ import pandas as pd
 import numpy as np
 import random
 import json
-
+import requests
+from io import StringIO
+import asyncio
 
 default_args = {
     'owner': 'airflow',
