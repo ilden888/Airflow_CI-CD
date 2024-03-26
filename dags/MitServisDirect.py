@@ -20,7 +20,7 @@ default_args = {
 }
 
 dag = DAG(
-    'yandex_direct_update',
+    'yandex_direct_update_MitServis',
     default_args=default_args,
     description='DAG for updating Yandex Direct data every 30 minutes',
     schedule_interval='*/30 * * * *',  # Runs every 30 minutes
