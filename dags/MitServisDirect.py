@@ -8,6 +8,8 @@ from sqlalchemy import Column, Integer, Float, String, DateTime
 from sqlalchemy.ext.declarative import declarative_base
 import pandas as pd
 import numpy as np
+import random
+
 
 default_args = {
     'owner': 'airflow',
@@ -23,7 +25,7 @@ dag = DAG(
     'yandex_direct_update_MitServis',
     default_args=default_args,
     description='DAG for updating Yandex Direct data every 30 minutes',
-    schedule_interval='*/30 * * * *',  # Runs every 30 minutes
+    schedule_interval='*/30 * * * *',  # запуск каждые 30 минут.
     catchup=False
 )
 
