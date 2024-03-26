@@ -267,13 +267,13 @@ def main():
             arrayDfs.append(param_agg(df,param))
 
         # Создание ExcelWriter объекта
-        with pd.ExcelWriter(f'{clientLogin}_data.xlsx') as writer:
+        # with pd.ExcelWriter(f'{clientLogin}_data.xlsx') as writer:
             # Запись основного DataFrame на первую вкладку
-            df.to_excel(writer, sheet_name='Все данные', index=False)
+            # df.to_excel(writer, sheet_name='Все данные', index=False)
 
             # Запись датафреймов из списка arrayDfs на остальные вкладки
-            for i, df_param in enumerate(arrayDfs):
-                df_param.to_excel(writer, sheet_name=params[i], index=False)
+            # for i, df_param in enumerate(arrayDfs):
+            #     df_param.to_excel(writer, sheet_name=params[i], index=False)
 
 
             return arrayDfs
@@ -325,7 +325,7 @@ def load_data_to_postgresql(df):
     Base = declarative_base()
 
     class St2(Base):
-        __tablename__ = 'MitServis_yandex_day'
+        __tablename__ = 'MitServis_Direct_day'
         Day = Column(Date, primary_key=True)
         Impressions = Column(Integer)
         Clicks = Column(Integer)
@@ -335,7 +335,7 @@ def load_data_to_postgresql(df):
 
     # Загрузка данных в PostgreSQL
     df.to_sql(
-        'MitServis_yandex_day',
+        'MitServis_Direct_day',
         engine,
         index=False,
         if_exists='replace',
@@ -351,13 +351,13 @@ def load_data_to_postgresql(df):
         }
     )
 
-    print("Данные успешно загружены в таблицу MitServis_yandex_day.")
+    print("Данные успешно загружены в таблицу MitServis_Direct_day.")
 
 def run_yandex_direct_update():
     main()
 
 run_yandex_direct_update_task = PythonOperator(
-    task_id='run_yandex_direct_update',
+    task_id='yandex_direct_update_MitServis',
     python_callable=run_yandex_direct_update,
     dag=dag,
 )
