@@ -13,6 +13,8 @@ import json
 import requests
 from io import StringIO
 import asyncio
+from requests.exceptions import ConnectionError
+from time import sleep
 
 default_args = {
     'owner': 'deniks',
