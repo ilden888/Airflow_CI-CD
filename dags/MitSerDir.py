@@ -277,11 +277,6 @@ def main():
         print("Данные, готовые к загрузке в базу данных PostgreSQL:")
         print(arrayDfs)
 
-        with pd.ExcelWriter(f'{clientLogin}_data.xlsx') as writer:
-            df.to_excel(writer, sheet_name='Все данные', index=False)
-            for i, df_param in enumerate(arrayDfs):
-                df_param.to_excel(writer, sheet_name=params[i], index=False)
-
             # Загрузка данных в базу данных PostgreSQL
             load_data_to_postgresql(arrayDfs[3])
 
