@@ -273,6 +273,10 @@ def main():
         for param in params:
             arrayDfs.append(param_agg(df,param))
 
+        # Вывод данных перед загрузкой в базу данных PostgreSQL
+        print("Данные, готовые к загрузке в базу данных PostgreSQL:")
+        print(arrayDfs)
+
         with pd.ExcelWriter(f'{clientLogin}_data.xlsx') as writer:
             df.to_excel(writer, sheet_name='Все данные', index=False)
             for i, df_param in enumerate(arrayDfs):
@@ -305,6 +309,10 @@ def load_data_to_postgresql(df):
         Cost = Column(Float)
 
     Base.metadata.create_all(engine)
+
+    # Вывод данных перед загрузкой в PostgreSQL
+    print("Данные для загрузки в PostgreSQL:")
+    print(df)
 
     # Загрузка данных в PostgreSQL
     df.to_sql(
