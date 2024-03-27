@@ -27,9 +27,9 @@ default_args = {
 }
 
 dag = DAG(
-    'ya_dir_up_Tank',
+    'ya_dir_up_Haval',
     default_args=default_args,
-    description='DAG для загрузки данных из Yandex Direct каждые 4 часа',
+    description='DAG для загрузки данных из Yandex Direct каждые 4 часа. ТАНК',
     schedule_interval='0 */4 * * *',  # запуск каждые 4 часа, в 0 минут
     catchup=False
 )
@@ -281,10 +281,7 @@ def main():
         print("Данные, готовые к загрузке в базу данных PostgreSQL:")
         print(arrayDfs)
 
-            # Загрузка данных в базу данных PostgreSQL
-            load_data_to_postgresql(arrayDfs[3])
-
-            return arrayDfs
+        return arrayDfs
 
 def load_data_to_postgresql(df):
     connection_params = {
@@ -335,6 +332,13 @@ def load_data_to_postgresql(df):
 
 def run_yandex_direct_update():
     main()
+
+def run_yandex_direct_update():
+    arrayDfs = main()
+    if arrayDfs:
+        # Выбираем нужный DataFrame для загрузки в PostgreSQL
+        df_to_load = arrayDfs[3]  # Измените индекс, если требуется другой DataFrame
+        load_data_to_postgresql(df_to_load)
 
 run_yandex_direct_update_task = PythonOperator(
     task_id='ya_dir_up_Tank',
