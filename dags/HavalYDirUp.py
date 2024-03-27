@@ -260,7 +260,7 @@ def main():
 
     # Определение дат начала и окончания отчетного периода
     date1 = '2024-01-01'
-    date2 = '2024-05-31'
+    date2 = '2024-05-30'
 
     yandex_direct_api = Yandex_Direct_API()
     headers = yandex_direct_api.get_headers(token, clientLogin)
