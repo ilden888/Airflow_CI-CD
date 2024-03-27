@@ -10,23 +10,27 @@ import pandas as pd
 import numpy as np
 import random
 import json
-
+import requests
+from io import StringIO
+import asyncio
+from requests.exceptions import ConnectionError
+from time import sleep
 
 default_args = {
-    'owner': 'airflow',
+    'owner': 'deniks',
     'depends_on_past': False,
-    'start_date': datetime(2024, 3, 26),
     'email_on_failure': False,
     'email_on_retry': False,
     'retries': 1,
     'retry_delay': timedelta(minutes=5),
+    'start_date': datetime(2024, 3, 27),
 }
 
 dag = DAG(
-    'yandex_direct_update_MitServis',
+    'ya_dir_up_Lenensky',
     default_args=default_args,
-    description='DAG for updating Yandex Direct data every 30 minutes',
-    schedule_interval='*/59 * * * *',  # запуск каждые 59 минут.
+    description='DAG для загрузки данных из Yandex Direct каждые 4 часа. Lenensky',
+    schedule_interval='0 */4 * * *',  # запуск каждые 4 часа, в 0 минут
     catchup=False
 )
 
@@ -247,42 +251,15 @@ def param_agg(df, param):
 
     return agg_values
 
-
-
 def main():
-  # Получение данных по API
-    yandex_direct_api = Yandex_Direct_API()
-    headers = yandex_direct_api.get_headers(token, clientLogin)
-    body = yandex_direct_api.get_body(date1, date2, goalID)
-    df = yandex_direct_api.getReport(headers, body)
+    token = 'y0_AgAAAAB0gCVrAAtswwAAAAD-Tw15AAAdxWNsYS1BF7pV-VjqhBIF6lu5NA'
+    clientLogin = 'ad-borishofservicelenensky'
 
-    params = ['Название кампании', 'Название группы объявлений', 'Устройство', 'Дата', 'Пол', 'ГЕО']
+    # Определение ID цели из раздела "Цели" Яндекс.Метрики
+    goalID = [201643918, 201643921, 201643924, 38779145, 38779184, 38779190, 51086437, 321699286, 63185119, 139964005]  # замените это на реальный ID цели
 
-    arrayDfs = []
-    # Обработка полученных данных
-    if df is not None:
-        df = yandex_direct_api.normalize_Data(df)
-
-        for param in params:
-            arrayDfs.append(param_agg(df,param))
-
-        # Создание ExcelWriter объекта
-        # with pd.ExcelWriter(f'{clientLogin}_data.xlsx') as writer:
-            # Запись основного DataFrame на первую вкладку
-            # df.to_excel(writer, sheet_name='Все данные', index=False)
-
-            # Запись датафреймов из списка arrayDfs на остальные вкладки
-            # for i, df_param in enumerate(arrayDfs):
-            #     df_param.to_excel(writer, sheet_name=params[i], index=False)
-
-
-            return arrayDfs
-
-def main():
-    token = 'y0_AgAAAABz3u3QAAtswwAAAAD99wpzAADw-3AxvJpP17vkS0KXhgUkqQvAsg'
-    clientLogin = 'ad-borishofmitsuservice'
-    goalID = [57631480, 201775759, 201775762, 201775765, 117419404, 131301547, 131582014, 140117464, 140117503, 154531090]
-    date1 = '2024-02-01'
+    # Определение дат начала и окончания отчетного периода
+    date1 = '2024-01-01'
     date2 = '2024-05-31'
 
     yandex_direct_api = Yandex_Direct_API()
@@ -300,15 +277,11 @@ def main():
         for param in params:
             arrayDfs.append(param_agg(df,param))
 
-        with pd.ExcelWriter(f'{clientLogin}_data.xlsx') as writer:
-            df.to_excel(writer, sheet_name='Все данные', index=False)
-            for i, df_param in enumerate(arrayDfs):
-                df_param.to_excel(writer, sheet_name=params[i], index=False)
+        # Вывод данных перед загрузкой в базу данных PostgreSQL
+        print("Данные, готовые к загрузке в базу данных PostgreSQL:")
+        print(arrayDfs)
 
-            # Загрузка данных в базу данных PostgreSQL
-            load_data_to_postgresql(arrayDfs[3])
-
-            return arrayDfs
+        return arrayDfs
 
 def load_data_to_postgresql(df):
     connection_params = {
@@ -325,7 +298,7 @@ def load_data_to_postgresql(df):
     Base = declarative_base()
 
     class St2(Base):
-        __tablename__ = 'MitServis_Direct_day'
+        __tablename__ = 'Lenensky_Direct_day'
         Day = Column(Date, primary_key=True)
         Impressions = Column(Integer)
         Clicks = Column(Integer)
@@ -333,9 +306,13 @@ def load_data_to_postgresql(df):
 
     Base.metadata.create_all(engine)
 
+    # Вывод данных перед загрузкой в PostgreSQL
+    print("Данные для загрузки в PostgreSQL:")
+    print(df)
+
     # Загрузка данных в PostgreSQL
     df.to_sql(
-        'MitServis_Direct_day',
+        'Lenensky_Direct_day',
         engine,
         index=False,
         if_exists='replace',
@@ -351,13 +328,20 @@ def load_data_to_postgresql(df):
         }
     )
 
-    print("Данные успешно загружены в таблицу MitServis_Direct_day.")
+    print("Данные успешно загружены в таблицу Lenensky_Direct_day.")
 
 def run_yandex_direct_update():
     main()
 
+def run_yandex_direct_update():
+    arrayDfs = main()
+    if arrayDfs:
+        # Выбираем нужный DataFrame для загрузки в PostgreSQL
+        df_to_load = arrayDfs[3]  # Измените индекс, если требуется другой DataFrame
+        load_data_to_postgresql(df_to_load)
+
 run_yandex_direct_update_task = PythonOperator(
-    task_id='yandex_direct_update_MitServis',
+    task_id='ya_dir_up_Lenensky',
     python_callable=run_yandex_direct_update,
     dag=dag,
 )
