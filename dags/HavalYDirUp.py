@@ -19,18 +19,18 @@ from time import sleep
 default_args = {
     'owner': 'deniks',
     'depends_on_past': False,
-    'start_date': datetime(2024, 3, 26),
     'email_on_failure': False,
     'email_on_retry': False,
     'retries': 1,
     'retry_delay': timedelta(minutes=5),
+    'start_date': datetime(2024, 3, 27),
 }
 
 dag = DAG(
-    'ya_dir_up_MitServis',
+    'ya_dir_up_Haval',
     default_args=default_args,
-    description='DAG for updating Yandex Direct data every 30 minutes',
-    schedule_interval='*/59 * * * *',  # запуск каждые 59 минут.
+    description='DAG для загрузки данных из Yandex Direct каждые 4 часа Haval',
+    schedule_interval='0 */4 * * *',  # запуск каждые 4 часа, в 0 минут
     catchup=False
 )
 
@@ -252,10 +252,14 @@ def param_agg(df, param):
     return agg_values
 
 def main():
-    token = 'y0_AgAAAABz3u3QAAtswwAAAAD99wpzAADw-3AxvJpP17vkS0KXhgUkqQvAsg'
-    clientLogin = 'ad-borishofmitsuservice'
-    goalID = [57631480, 201775759, 201775762, 201775765, 117419404, 131301547, 131582014, 140117464, 140117503, 154531090]
-    date1 = '2024-02-01'
+    token = 'y0_AgAAAABzu5wMAAtswwAAAAD-TDXkAADG8g8PtyVBVYQh49PWtPCPqAa1hA'
+    clientLogin = 'ad-borishofhaval'
+
+    # Определение ID цели из раздела "Цели" Яндекс.Метрики
+    goalID = [323143806, 323143716, 322956099, 322955176, 322955175, 322778998, 322778997, 322778996, 322778995, 323825528]  # ID цели
+
+    # Определение дат начала и окончания отчетного периода
+    date1 = '2024-01-01'
     date2 = '2024-05-31'
 
     yandex_direct_api = Yandex_Direct_API()
@@ -277,10 +281,7 @@ def main():
         print("Данные, готовые к загрузке в базу данных PostgreSQL:")
         print(arrayDfs)
 
-            # Загрузка данных в базу данных PostgreSQL
-            load_data_to_postgresql(arrayDfs[3])
-
-            return arrayDfs
+        return arrayDfs
 
 def load_data_to_postgresql(df):
     connection_params = {
@@ -297,7 +298,7 @@ def load_data_to_postgresql(df):
     Base = declarative_base()
 
     class St2(Base):
-        __tablename__ = 'MitServis_Direct_day'
+        __tablename__ = 'Haval_Direct_day'
         Day = Column(Date, primary_key=True)
         Impressions = Column(Integer)
         Clicks = Column(Integer)
@@ -311,7 +312,7 @@ def load_data_to_postgresql(df):
 
     # Загрузка данных в PostgreSQL
     df.to_sql(
-        'MitServis_Direct_day',
+        'Haval_Direct_day',
         engine,
         index=False,
         if_exists='replace',
@@ -327,13 +328,20 @@ def load_data_to_postgresql(df):
         }
     )
 
-    print("Данные успешно загружены в таблицу MitServis_Direct_day.")
+    print("Данные успешно загружены в таблицу Haval_Direct_day.")
 
 def run_yandex_direct_update():
     main()
 
+def run_yandex_direct_update():
+    arrayDfs = main()
+    if arrayDfs:
+        # Выбираем нужный DataFrame для загрузки в PostgreSQL
+        df_to_load = arrayDfs[3]  # Измените индекс, если требуется другой DataFrame
+        load_data_to_postgresql(df_to_load)
+
 run_yandex_direct_update_task = PythonOperator(
-    task_id='ya_dir_up_MitServis',
+    task_id='ya_dir_up_Haval',
     python_callable=run_yandex_direct_update,
     dag=dag,
 )
