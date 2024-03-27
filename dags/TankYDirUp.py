@@ -27,7 +27,7 @@ default_args = {
 }
 
 dag = DAG(
-    'ya_dir_up_Haval',
+    'ya_dir_up_Tank',
     default_args=default_args,
     description='DAG для загрузки данных из Yandex Direct каждые 4 часа. ТАНК',
     schedule_interval='0 */4 * * *',  # запуск каждые 4 часа, в 0 минут
